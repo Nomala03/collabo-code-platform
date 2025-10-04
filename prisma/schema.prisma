@@ -1,0 +1,109 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(SUBMITTER)
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  ownedProjects Project[]           @relation("ProjectOwner")
+  memberships   ProjectMembership[]
+  submissions   Submission[]
+  reviews       Review[]            @relation("UserReviews")
+  Comment       Comment[]
+}
+
+model Project {
+  id          String              @id @default(uuid())
+  name        String
+  description String?
+  ownerId     String
+  owner       User                @relation("ProjectOwner", fields: [ownerId], references: [id])
+  members     ProjectMembership[]
+  submissions Submission[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+}
+
+model ProjectMembership {
+  id        String   @id @default(uuid())
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  role      Role
+  createdAt DateTime @default(now())
+}
+
+model Submission {
+  id          String           @id @default(uuid())
+  title       String
+  description String?
+  code        String
+  status      SubmissionStatus @default(PENDING)
+  projectId   String
+  authorId    String
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  project  Project   @relation(fields: [projectId], references: [id])
+  author   User      @relation(fields: [authorId], references: [id])
+  comments Comment[]
+  reviews  Review[]
+}
+
+model Comment {
+  id           String   @id @default(uuid())
+  content      String
+  filePath     String?
+  lineNumber   Int?
+  submissionId String
+  authorId     String
+  createdAt    DateTime @default(now())
+
+  submission Submission @relation(fields: [submissionId], references: [id])
+  author     User       @relation(fields: [authorId], references: [id])
+}
+
+model Review {
+  id           String       @id @default(uuid())
+  submissionId String
+  reviewerId   String
+  summary      String?
+  status       ReviewStatus @default(IN_REVIEW)
+  createdAt    DateTime     @default(now())
+
+  submission Submission @relation(fields: [submissionId], references: [id])
+  reviewer   User       @relation("UserReviews", fields: [reviewerId], references: [id])
+}
+
+enum Role {
+  REVIEWER
+  SUBMITTER
+  ADMIN
+}
+
+enum SubmissionStatus {
+  PENDING
+  IN_REVIEW
+  APPROVED
+  CHANGES_REQUESTED
+}
+
+enum ReviewStatus {
+  IN_REVIEW
+  APPROVED
+  CHANGES_REQUESTED
+}
