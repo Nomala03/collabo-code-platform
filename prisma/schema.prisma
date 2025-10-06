@@ -8,21 +8,21 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      Role     @default(SUBMITTER)
-  avatarUrl String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
+  id            String              @id @default(uuid())
+  name          String
+  email         String              @unique
+  password      String
+  role          Role                @default(SUBMITTER)
+  avatarUrl     String?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  notifications Notification[]
   ownedProjects Project[]           @relation("ProjectOwner")
   memberships   ProjectMembership[]
   submissions   Submission[]
-  reviews       Review[]            @relation("UserReviews")
-  Comment       Comment[]
+
+  reviews  Review[]  @relation("UserReviews")
+  comments Comment[]
 }
 
 model Project {
@@ -87,6 +87,16 @@ model Review {
 
   submission Submission @relation(fields: [submissionId], references: [id])
   reviewer   User       @relation("UserReviews", fields: [reviewerId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
 }
 
 enum Role {
