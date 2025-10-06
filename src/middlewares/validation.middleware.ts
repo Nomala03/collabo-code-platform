@@ -3,7 +3,7 @@ import { validationResult, ValidationChain, ValidationError } from "express-vali
 
 const validate = (validations: ValidationChain[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    // Run each validation in parallel
+    
     await Promise.all(validations.map(validation => validation.run(req)));
 
     const errors = validationResult(req);

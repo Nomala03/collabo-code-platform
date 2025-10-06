@@ -5,6 +5,11 @@ import http from 'http';
 import { Server } from 'socket.io';
 
 import authRoutes from './routes/auth.routes';
+import projectRoutes from './routes/project.routes';
+import submissionRoutes from './routes/submission.routes';
+import commentRoutes from './routes/comment.routes';
+import notificationRoutes from './routes/notification.routes';
+import { reviewRoutes } from './routes/review.routes';
 import { errorHandler } from './middlewares/error.middleware';
 import { initNotifications } from './sockets/notifications';
 
@@ -19,6 +24,11 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/submissions', submissionRoutes);
+app.use('/api/comments', commentRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/reviews', reviewRoutes(io));
 
 // Error middleware
 app.use(errorHandler);

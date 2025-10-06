@@ -5,10 +5,6 @@ import { authenticateToken } from "../middlewares/auth.middleware";
 
 const router = Router();
 
-/**
- * @route   POST /api/auth/register
- * @desc    Register new user
- */
 router.post(
   "/register",
   [
@@ -32,10 +28,6 @@ router.post(
   register
 );
 
-/**
- * @route   POST /api/auth/login
- * @desc    Log in user
- */
 router.post(
   "/login",
   [
@@ -52,10 +44,6 @@ router.post(
   login
 );
 
-/**
- * @route   GET /api/auth/me
- * @desc    Get current authenticated user
- */
 router.get("/me", authenticateToken, (req: any, res: Response) => {
   res.json({ user: req.user });
 });
