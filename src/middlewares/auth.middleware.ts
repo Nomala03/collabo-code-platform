@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import {} from '../types/express';
 import { verifyToken } from '../utils/jwt';
 
 export const authenticateToken = (
@@ -9,12 +10,14 @@ export const authenticateToken = (
   const authHeader = req.headers['authorization'];
   const token = authHeader?.split(' ')[1];
 
-  if (!token) return res.status(401).json({ message: 'Access token required' });
-
+  if (!token)
+    return res.status(401).json({ message: 'Access token required' });
   const decoded = verifyToken(token);
-  if (!decoded) return res.status(403).json({ message: 'Invalid or expired token' });
 
-  req.user = decoded;
+  if (!decoded)
+    return res.status(403).json({ message: 'Invalid or expired token' });
+
+  req.user = decoded; 
   next();
 };
 

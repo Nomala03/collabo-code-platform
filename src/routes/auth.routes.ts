@@ -5,6 +5,9 @@ import { authenticateToken } from "../middlewares/auth.middleware";
 
 const router = Router();
 
+// Define valid roles
+const validRoles = ["REVIEWER", "SUBMITTER", "ADMIN"];
+
 router.post(
   "/register",
   [
@@ -17,6 +20,11 @@ router.post(
     body("name")
       .notEmpty()
       .withMessage("Name is required."),
+    body("role")
+      .notEmpty()
+      .withMessage("Role is required.")
+      .isIn(validRoles)
+      .withMessage(`Role must be one of: ${validRoles.join(", ")}`),
   ],
   (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
@@ -49,5 +57,4 @@ router.get("/me", authenticateToken, (req: any, res: Response) => {
 });
 
 export default router;
-
 

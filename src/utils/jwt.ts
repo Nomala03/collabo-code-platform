@@ -8,7 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 export interface TokenPayload extends JwtPayload {
   id: string;
   email?: string;
-  role: string;
+  role: 'REVIEWER' | 'SUBMITTER' | 'ADMIN';
 }
 
 export const generateToken = (payload: TokenPayload): string => {
